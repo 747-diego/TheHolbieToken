@@ -9,8 +9,9 @@ App = {
 
     init: function() {
         console.log("App initialized...")
-        return App. initWeb3();
+        return App.initWeb3()
     },
+
 
     initWeb3: function() {
         if (typeof web3 !== 'undefined') {
@@ -40,9 +41,22 @@ App = {
               console.log("Dapp Token Address:", dappToken.address);
             });
     
-            // App.listenForEvents();
+            App.listenForEvents();
             return App.render();
           });
+        })
+    },
+
+    // LISTEN FOR EVENTS EMITTED FROM THE CONTRACT 
+    listenForEvents: function() {
+        App.contracts.DappTokenSale.deployed().then(function(instance) {
+            instance.Sell({}, {
+                fromBlock: 0,
+                toBlock: 'latest',
+            }).watch(function(error, event) {
+                console.log("event triggered", event);
+                App.render();
+            })
         })
     },
 
@@ -110,8 +124,9 @@ App = {
         }).then(function(result) {
             console.log("Tokens bought...");
             $('form').trigger('reset'); // reset number of tokens in form
-            $('#loader').hide();
-            $('#content').show();
+            // WAIT FOR SELL EVENT 
+            // $('#loader').hide();
+            // $('#content').show();
         });
     }
 }
